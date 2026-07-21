@@ -778,7 +778,19 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
       }
 
-      function getReply(input) {
+      function openWebSearch(query) {
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        window.open(searchUrl, '_blank', 'noopener,noreferrer');
+      }
+
+      function extractSearchQuery(text) {
+        return text
+          .replace(/^(can you|could you|please|tell me|i want to know|what is|who is|what are|who are|why is|why are|how do i|how can i|when is|where is|where can i|can you tell me about|what does|how does|is there|do you know)/i, '')
+          .replace(/\?+$/g, '')
+          .trim();
+      }
+
+      async function getReply(input) {
         const text = input.toLowerCase().trim();
         if (!text) {
           return "I’m here. What would you like to talk about?";
@@ -795,8 +807,19 @@
         if (/(your name|who are you)/.test(text)) {
           return "My name is Becky. I’m your warm, supportive companion, and I’m happy to talk with you.";
         }
+        if (/(advice|should i|what should i do|i need help|i'm struggling|problem|difficult|stuck)/.test(text)) {
+          return "That sounds heavy, and it makes sense to want guidance. I’d suggest taking one small next step, focusing on what feels manageable, and giving yourself permission to ask for support if you need it.";
+        }
         if (/(help|support)/.test(text)) {
           return "Of course. Tell me what you need, and I’ll do my best to support you in a calm and thoughtful way.";
+        }
+        if (/(what|who|when|where|why|how|can you|could you|do you know|tell me about)/.test(text)) {
+          const query = extractSearchQuery(text);
+          if (query) {
+            openWebSearch(query);
+            return `That sounds like a question I can help with. I opened a web search for “${query}” so you can look at the latest details and verify anything important.`;
+          }
+          return "I can help with that. If you want more current information, I can open a web search for the topic.";
         }
         if (/(thank you|thanks)/.test(text)) {
           return "You’re very welcome. I’m glad I could be here for you.";
@@ -804,16 +827,18 @@
         if (/(bye|goodbye|see you)/.test(text)) {
           return "Take care. I’ll be here whenever you want to talk again.";
         }
-        return `Thank you for sharing that with me. I’m listening, and I’d love to keep this conversation warm and natural with you.`;
+        return "Thank you for sharing that with me. I’m listening, and I’d love to keep this conversation warm and natural with you.";
       }
 
-      chatForm.addEventListener('submit', (event) => {
+      chatForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const value = chatInput.value.trim();
         if (!value) return;
         addBubble(value, 'user');
         chatInput.value = '';
-        setTimeout(() => addBubble(getReply(value), 'bot'), 350);
+        const reply = await getReply(value);
+        addBubble(reply, 'bot');
+        speakBecky(reply);
       });
 
       function updatePreferredVoice() {
@@ -906,7 +931,7 @@
           voiceStatus.textContent = 'Listening... speak naturally';
         };
 
-        recognition.onresult = (event) => {
+        recognition.onresult = async (event) => {
           let transcript = '';
 
           for (let index = event.resultIndex; index < event.results.length; index += 1) {
@@ -920,11 +945,9 @@
 
           if (transcript) {
             addBubble(transcript, 'user');
-            const reply = getReply(transcript);
-            setTimeout(() => {
-              addBubble(reply, 'bot');
-              speakBecky(reply);
-            }, 350);
+            const reply = await getReply(transcript);
+            addBubble(reply, 'bot');
+            speakBecky(reply);
             voiceStatus.textContent = 'Becky is responding...';
           }
         };
