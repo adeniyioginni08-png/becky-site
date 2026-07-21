@@ -676,14 +676,14 @@
               <input id="voiceUpload" type="file" accept="audio/*" />
             </label>
             <label class="upload-row">
-              Optional AI voice key
+              Optional ElevenLabs API key
               <input id="aiVoiceApiKey" type="password" placeholder="Optional key" />
             </label>
             <label class="upload-row">
-              Optional voice provider URL
-              <input id="aiVoiceUrl" placeholder="https://..." />
+              ElevenLabs voice ID or URL
+              <input id="aiVoiceUrl" placeholder="Paste voice ID or https://..." />
             </label>
-            <div class="small-note">You can leave these blank and Becky will use the built-in browser voice, which works for free.</div>
+            <div class="small-note">Paste your ElevenLabs voice ID, a voice-library URL like the one you shared, or leave this blank to use the built-in browser voice.</div>
           </div>
         </div>
       </section>
@@ -824,6 +824,34 @@
           || voices[0] || null;
       }
 
+      function resolveElevenLabsConfig() {
+        const value = (aiVoiceUrl || '').trim();
+        if (!value) {
+          return null;
+        }
+
+        if (/^https?:\/\//i.test(value)) {
+          try {
+            const parsedUrl = new URL(value);
+            const voiceIdFromQuery = parsedUrl.searchParams.get('voiceId') || parsedUrl.searchParams.get('voice_id');
+            if (voiceIdFromQuery) {
+              return { kind: 'elevenlabs', voiceId: voiceIdFromQuery };
+            }
+            if (/elevenlabs/i.test(parsedUrl.hostname)) {
+              return { kind: 'elevenlabs', endpoint: value };
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+
+        if (/^[a-zA-Z0-9_-]{10,}$/.test(value)) {
+          return { kind: 'elevenlabs', voiceId: value };
+        }
+
+        return null;
+      }
+
       async function speakBecky(text) {
         if (uploadedVoiceUrl) {
           const audio = new Audio(uploadedVoiceUrl);
@@ -840,6 +868,45 @@
             }
           });
           return;
+        }
+
+        const elevenLabsConfig = resolveElevenLabsConfig();
+        if (elevenLabsConfig && aiVoiceApiKey) {
+          try {
+            voiceStatus.textContent = 'Using ElevenLabs voice';
+            const endpoint = elevenLabsConfig.endpoint || `https://api.elevenlabs.io/v1/text-to-speech/${elevenLabsConfig.voiceId}`;
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'xi-api-key': aiVoiceApiKey
+              },
+              body: JSON.stringify({
+                text,
+                model_id: 'eleven_monolingual_v1',
+                voice_settings: {
+                  stability: 0.4,
+                  similarity_boost: 0.9
+                }
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error('ElevenLabs voice request failed');
+            }
+
+            const blob = await response.blob();
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            audio.play().catch(() => {
+              URL.revokeObjectURL(audioUrl);
+            });
+            audio.onended = () => URL.revokeObjectURL(audioUrl);
+            return;
+          } catch (error) {
+            console.error(error);
+            voiceStatus.textContent = 'ElevenLabs voice unavailable, using fallback';
+          }
         }
 
         if (aiVoiceUrl) {
