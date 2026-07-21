@@ -251,6 +251,8 @@
         position: absolute;
         background: #0b1423;
         border-radius: 999px;
+        z-index: 0;
+        pointer-events: none;
       }
       .orb::before {
         width: 80px;
@@ -265,6 +267,11 @@
         left: 54px;
         bottom: 46px;
         border-radius: 0 0 999px 999px;
+      }
+      .orb.has-image::before,
+      .orb.has-image::after {
+        opacity: 0;
+        visibility: hidden;
       }
       @keyframes float {
         0%, 100% { transform: translateY(0); }
@@ -973,6 +980,7 @@
         heroOrb.style.backgroundPosition = 'center';
         heroOrb.style.backgroundRepeat = 'no-repeat';
         heroOrb.classList.add('has-image');
+        heroOrb.style.border = '2px solid rgba(255,255,255,0.12)';
       });
 
       voiceUpload.addEventListener('change', (event) => {
@@ -1001,6 +1009,7 @@
           avatarVisual.classList.remove('has-image');
           heroOrb.style.backgroundImage = '';
           heroOrb.classList.remove('has-image');
+          heroOrb.style.border = '';
           if (uploadedAvatarUrl) {
             URL.revokeObjectURL(uploadedAvatarUrl);
           }
