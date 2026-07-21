@@ -840,15 +840,20 @@
         return "Thank you for sharing that with me. I’m listening, and I’d love to keep this conversation warm and natural with you.";
       }
 
-      chatForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const value = chatInput.value.trim();
-        if (!value) return;
-        addBubble(value, 'user');
+      async function handleChatMessage(value) {
+        if (!value || !value.trim()) return;
+        const trimmedValue = value.trim();
+        addBubble(trimmedValue, 'user');
         chatInput.value = '';
-        const reply = await getReply(value);
+        const reply = await getReply(trimmedValue);
         addBubble(reply, 'bot');
         speakBecky(reply);
+      }
+
+      chatForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const value = chatInput.value;
+        await handleChatMessage(value);
       });
 
       function updatePreferredVoice() {
@@ -954,10 +959,7 @@
           transcript = transcript.trim();
 
           if (transcript) {
-            addBubble(transcript, 'user');
-            const reply = await getReply(transcript);
-            addBubble(reply, 'bot');
-            speakBecky(reply);
+            await handleChatMessage(transcript);
             voiceStatus.textContent = 'Becky is responding...';
           }
         };
