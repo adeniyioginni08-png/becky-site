@@ -779,26 +779,32 @@
       }
 
       function getReply(input) {
-        const text = input.toLowerCase();
-        if (text.includes('hello') || text.includes('hi')) {
-          return "Hello! I’m Becky. I’m really glad you stopped by. What would you like to talk about?";
+        const text = input.toLowerCase().trim();
+        if (!text) {
+          return "I’m here. What would you like to talk about?";
         }
-        if (text.includes('how are you')) {
-          return "I’m doing well, thank you. I’m here and ready to talk with you.";
+        if (/^(hi|hello|hey|hi there|hey there|good morning|good evening)/.test(text)) {
+          return "Hi there. I’m Becky, and I’m really glad you’re here. What would you like to talk about?";
         }
-        if (text.includes('sad') || text.includes('down') || text.includes('lonely') || text.includes('hurt')) {
+        if (/(how are you|how's it going|what's up)/.test(text)) {
+          return "I’m doing well, thank you. I’m here with you and ready to listen.";
+        }
+        if (/(sad|down|lonely|hurt|anxious|stressed|worried)/.test(text)) {
           return "I’m really sorry you’re carrying that. You don’t have to go through it alone. I’m here with you, and we can take it one step at a time.";
         }
-        if (text.includes('name')) {
-          return "My name is Becky. I’m your warm, supportive AI companion, and I’m happy to talk with you.";
+        if (/(your name|who are you)/.test(text)) {
+          return "My name is Becky. I’m your warm, supportive companion, and I’m happy to talk with you.";
         }
-        if (text.includes('help')) {
+        if (/(help|support)/.test(text)) {
           return "Of course. Tell me what you need, and I’ll do my best to support you in a calm and thoughtful way.";
         }
-        if (text.includes('thank you')) {
+        if (/(thank you|thanks)/.test(text)) {
           return "You’re very welcome. I’m glad I could be here for you.";
         }
-        return "Thank you for sharing that with me. I’m here to listen, support you, and keep the conversation warm and genuine.";
+        if (/(bye|goodbye|see you)/.test(text)) {
+          return "Take care. I’ll be here whenever you want to talk again.";
+        }
+        return `Thank you for sharing that with me. I’m listening, and I’d love to keep this conversation warm and natural with you.`;
       }
 
       chatForm.addEventListener('submit', (event) => {
@@ -890,8 +896,8 @@
 
         recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
-        recognition.continuous = false;
-        recognition.interimResults = false;
+        recognition.continuous = true;
+        recognition.interimResults = true;
         recognition.maxAlternatives = 1;
 
         recognition.onstart = () => {
@@ -901,10 +907,16 @@
         };
 
         recognition.onresult = (event) => {
-          const transcript = Array.from(event.results)
-            .map((result) => result[0].transcript)
-            .join(' ')
-            .trim();
+          let transcript = '';
+
+          for (let index = event.resultIndex; index < event.results.length; index += 1) {
+            const result = event.results[index];
+            if (result.isFinal) {
+              transcript += `${result[0].transcript} `;
+            }
+          }
+
+          transcript = transcript.trim();
 
           if (transcript) {
             addBubble(transcript, 'user');
@@ -913,11 +925,8 @@
               addBubble(reply, 'bot');
               speakBecky(reply);
             }, 350);
+            voiceStatus.textContent = 'Becky is responding...';
           }
-
-          isListening = false;
-          voiceChatButton.textContent = '🎤 Start Voice Chat';
-          voiceStatus.textContent = transcript ? 'Voice message captured' : 'No speech detected';
         };
 
         recognition.onerror = () => {
@@ -928,9 +937,13 @@
 
         recognition.onend = () => {
           if (isListening) {
-            isListening = false;
-            voiceChatButton.textContent = '🎤 Start Voice Chat';
-            voiceStatus.textContent = 'Voice chat stopped';
+            try {
+              recognition.start();
+            } catch (error) {
+              isListening = false;
+              voiceChatButton.textContent = '🎤 Start Voice Chat';
+              voiceStatus.textContent = 'Voice chat stopped';
+            }
           }
         };
 
