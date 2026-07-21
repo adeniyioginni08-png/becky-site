@@ -790,6 +790,13 @@
           .trim();
       }
 
+      function getTimeReply() {
+        const now = new Date();
+        const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+        const date = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        return `It’s ${time} right now, and today is ${date}.`;
+      }
+
       async function getReply(input) {
         const text = input.toLowerCase().trim();
         if (!text) {
@@ -806,6 +813,9 @@
         }
         if (/(your name|who are you)/.test(text)) {
           return "My name is Becky. I’m your warm, supportive companion, and I’m happy to talk with you.";
+        }
+        if (/(what time is it|what's the time|what time|current time|time is it)/.test(text)) {
+          return getTimeReply();
         }
         if (/(advice|should i|what should i do|i need help|i'm struggling|problem|difficult|stuck)/.test(text)) {
           return "That sounds heavy, and it makes sense to want guidance. I’d suggest taking one small next step, focusing on what feels manageable, and giving yourself permission to ask for support if you need it.";
