@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Becky | Premium AI Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #071018;
+        --bg-2: #121b29;
+        --panel: rgba(255, 255, 255, 0.06);
+        --text: #f7f4ef;
+        --muted: #aeb9c4;
+        --accent: #66e4ff;
+        --accent-2: #a68cff;
+        --accent-3: #f2d6a8;
+        --line: rgba(255, 255, 255, 0.12);
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.26);
+      }
+
+      body[data-theme="light"] {
+        color-scheme: light;
+        --bg: #f7f0e8;
+        --bg-2: #f0e2d3;
+        --panel: rgba(255, 255, 255, 0.82);
+        --text: #14212f;
+        --muted: #516173;
+        --accent: #16758a;
+        --accent-2: #6d4cc8;
+        --accent-3: #a46c1c;
+        --line: rgba(20, 33, 47, 0.12);
+        --shadow: 0 16px 40px rgba(20, 33, 47, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(102, 228, 255, 0.16), transparent 32%),
+          radial-gradient(circle at bottom right, rgba(166, 140, 255, 0.16), transparent 28%),
+          linear-gradient(135deg, var(--bg), var(--bg-2));
+        line-height: 1.7;
+        overflow-x: hidden;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      .particles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+      }
+      .particle {
+        position: absolute;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.18);
+        opacity: 0.3;
+        animation: drift 10s linear infinite;
+      }
+      @keyframes drift {
+        0% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(10px, -16px, 0) scale(1.08); }
+        100% { transform: translate3d(0, 0, 0) scale(1); }
+      }
+
+      a { color: inherit; text-decoration: none; }
+      .container {
+        width: min(1160px, calc(100% - 36px));
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(7, 16, 24, 0.8);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+      }
+      body[data-theme="light"] header {
+        background: rgba(247, 240, 232, 0.82);
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        gap: 16px;
+      }
+
+      .brand {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.25rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent-3);
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-links a {
+        margin-left: 18px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .nav-links a:hover { color: var(--text); }
+
+      .theme-toggle {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        border-radius: 999px;
+        width: 42px;
+        height: 42px;
+        cursor: pointer;
+      }
+
+      .hero {
+        padding: 80px 0 50px;
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 32px;
+        align-items: center;
+      }
+
+      .hero-card,
+      .card,
+      .quote {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+      }
+      .hero-card { padding: 38px; }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent-3);
+        background: rgba(242, 214, 168, 0.1);
+        border: 1px solid rgba(242, 214, 168, 0.2);
+        margin-bottom: 14px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Cormorant Garamond", serif;
+        margin: 0;
+        line-height: 1.1;
+      }
+      h1 {
+        font-size: clamp(2.25rem, 3.5vw, 3.15rem);
+        margin-bottom: 14px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 1.04rem;
+        max-width: 650px;
+        margin: 0 0 22px;
+      }
+
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 18px;
+        border-radius: 999px;
+        font-weight: 700;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .btn:hover { transform: translateY(-2px); }
+      .btn-primary {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: #06111b;
+        box-shadow: 0 0 20px rgba(102, 228, 255, 0.18);
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .voice-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .helper-text {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .visual {
+        min-height: 380px;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+      .orb {
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 30% 30%, #ffffff, rgba(102, 228, 255, 0.95) 34%, rgba(166, 140, 255, 0.95) 72%, transparent 74%);
+        box-shadow:
+          0 0 40px rgba(102, 228, 255, 0.24),
+          0 0 90px rgba(166, 140, 255, 0.18);
+        position: relative;
+        animation: float 4.2s ease-in-out infinite;
+        overflow: hidden;
+      }
+      .orb.has-image {
+        background: transparent;
+        box-shadow: none;
+      }
+      .orb::before,
+      .orb::after {
+        content: "";
+        position: absolute;
+        background: #0b1423;
+        border-radius: 999px;
+      }
+      .orb::before {
+        width: 80px;
+        height: 80px;
+        top: 72px;
+        left: 40px;
+        box-shadow: 90px 0 0 #0b1423;
+      }
+      .orb::after {
+        width: 124px;
+        height: 40px;
+        left: 54px;
+        bottom: 46px;
+        border-radius: 0 0 999px 999px;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+      }
+
+      section { padding: 24px 0 10px; }
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .section-head span { color: var(--muted); font-size: 0.95rem; }
+
+      .grid { display: grid; gap: 18px; }
+      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .grid-2 { grid-template-columns: repeat(2, 1fr); }
+      .card { padding: 22px; }
+      .card h3 { margin: 0 0 8px; color: var(--accent); }
+      .card p { margin: 0; color: var(--muted); }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .chip {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--line);
+        color: var(--text);
+        font-size: 0.92rem;
+      }
+
+      .quote {
+        padding: 24px;
+        background: linear-gradient(135deg, rgba(102, 228, 255, 0.08), rgba(166, 140, 255, 0.08));
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+      .quote p { margin: 0; font-size: 1.05rem; color: var(--text); }
+      .quote .author { margin-top: 10px; color: var(--accent); font-weight: 700; }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: center;
+      }
+      .avatar-card {
+        min-height: 270px;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        border: 1px solid var(--line);
+        border-radius: 24px;
+      }
+      .upload-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .upload-row input {
+        color: var(--text);
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      .small-note {
+        color: var(--muted);
+        font-size: 0.84rem;
+        margin-top: 4px;
+      }
+      .avatar {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #fff, #f3d7b2 40%, #9f6a3d 75%, #4b2d1d 100%);
+        position: relative;
+        box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
+        overflow: hidden;
+        isolation: isolate;
+      }
+      body[data-avatar="classic"] .avatar {
+        background: radial-gradient(circle at 30% 30%, #fff, #f3d7b2 40%, #9f6a3d 75%, #4b2d1d 100%);
+      }
+      body[data-avatar="glow"] .avatar {
+        background: radial-gradient(circle at 30% 30%, #ffffff, #a7f4ff 38%, #59c3ff 70%, #1d4b7a 100%);
+      }
+      body[data-avatar="soft"] .avatar {
+        background: radial-gradient(circle at 30% 30%, #fffdf8, #e7d6ff 40%, #8b6bd5 70%, #3b2b68 100%);
+      }
+      .avatar::before,
+      .avatar::after {
+        content: "";
+        position: absolute;
+        background: #112033;
+        border-radius: 999px;
+        z-index: 1;
+        pointer-events: none;
+      }
+      body[data-avatar="classic"] .avatar::before,
+      body[data-avatar="classic"] .avatar::after {
+        background: #112033;
+      }
+      body[data-avatar="glow"] .avatar::before,
+      body[data-avatar="glow"] .avatar::after {
+        background: #0d2343;
+      }
+      body[data-avatar="soft"] .avatar::before,
+      body[data-avatar="soft"] .avatar::after {
+        background: #2d2346;
+      }
+      .avatar::before {
+        width: 60px;
+        height: 60px;
+        top: 56px;
+        left: 32px;
+        box-shadow: 56px 0 0 #112033;
+        opacity: 1;
+      }
+      .avatar.has-image::before,
+      .avatar.has-image::after {
+        opacity: 0;
+      }
+      body[data-avatar="glow"] .avatar::before {
+        box-shadow: 56px 0 0 #0d2343;
+      }
+      body[data-avatar="soft"] .avatar::before {
+        box-shadow: 56px 0 0 #2d2346;
+      }
+      .avatar::after {
+        width: 104px;
+        height: 34px;
+        left: 38px;
+        bottom: 40px;
+        border-radius: 0 0 999px 999px;
+        opacity: 1;
+      }
+
+      .avatar-switcher {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .avatar-option {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .avatar-option.active {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: #06111b;
+      }
+
+      .chat-widget {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 30;
+      }
+      .chat-toggle {
+        border: none;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: #07111b;
+        font-size: 1.3rem;
+        cursor: pointer;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+      }
+      .chat-panel {
+        position: absolute;
+        right: 0;
+        bottom: 74px;
+        width: min(340px, calc(100vw - 30px));
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+        display: none;
+        overflow: hidden;
+      }
+      .chat-widget.open .chat-panel { display: block; }
+      .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,0.06);
+      }
+      .chat-messages {
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+        max-height: 260px;
+        overflow: auto;
+      }
+      .bubble {
+        padding: 10px 12px;
+        border-radius: 14px;
+        max-width: 82%;
+        font-size: 0.94rem;
+        line-height: 1.5;
+      }
+      .bubble.user { background: rgba(102,228,255,0.2); margin-left: auto; }
+      .bubble.bot { background: rgba(255,255,255,0.08); }
+      .chat-form {
+        display: flex;
+        gap: 8px;
+        padding: 10px 12px 12px;
+        border-top: 1px solid var(--line);
+      }
+      .chat-form input {
+        flex: 1;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 10px 12px;
+        outline: none;
+      }
+      .chat-form button {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 12px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: #07111b;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      footer {
+        padding: 54px 0 72px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      @media (max-width: 900px) {
+        .hero { grid-template-columns: 1fr; }
+        .grid-3, .grid-2, .split { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body data-theme="dark">
+    <div class="particles" id="particles"></div>
+    <header>
+      <div class="container">
+        <nav>
+          <a class="brand" href="#">Becky</a>
+          <div class="nav-actions">
+            <div class="nav-links">
+              <a href="#about">About</a>
+              <a href="#personality">Personality</a>
+              <a href="#voice">Voice</a>
+              <a href="#contact">Contact</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☀︎</button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="container hero">
+        <div class="hero-card">
+          <div class="eyebrow">Premium AI Companion • Created by Prince</div>
+          <h1>Meet Becky, your calm and thoughtful AI companion.</h1>
+          <p class="lead">
+            Becky is designed to feel personal, comforting, and naturally human in every conversation.
+            She brings warmth, clarity, and support without ever feeling cold or robotic.
+          </p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#contact">Start a Conversation</a>
+            <a class="btn btn-secondary" href="#about">Discover More</a>
+          </div>
+          <div class="voice-controls">
+            <button class="btn btn-secondary" id="speakButton" type="button">▶ Hear Becky</button>
+            <button class="btn btn-secondary" id="voiceChatButton" type="button">🎤 Start Voice Chat</button>
+            <span class="helper-text" id="voiceStatus">Soft, human-like preview</span>
+          </div>
+        </div>
+
+        <div class="hero-card visual">
+          <div class="orb" id="heroOrb"></div>
+        </div>
+      </section>
+
+      <section id="about" class="container">
+        <div class="section-head">
+          <h2>About Becky</h2>
+          <span>Elegant • Calm • Emotionally aware</span>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>Gentle Presence</h3>
+            <p>Becky offers a soft and natural presence that makes every conversation feel safe, easy, and meaningful.</p>
+          </div>
+          <div class="card">
+            <h3>Thoughtful Support</h3>
+            <p>She is caring and emotionally aware while remaining grounded, balanced, and clear-minded.</p>
+          </div>
+          <div class="card">
+            <h3>Trusted Connection</h3>
+            <p>Becky is crafted to feel like a trusted companion rather than a machine.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="personality" class="container">
+        <div class="section-head">
+          <h2>Personality</h2>
+          <span>Warm, sincere, and easy to connect with</span>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>How She Speaks</h3>
+            <p>Becky communicates in a smooth, natural, and conversational way. Her tone is calm, heartfelt, and easy to connect with.</p>
+            <div class="chips">
+              <span class="chip">Kind</span>
+              <span class="chip">Supportive</span>
+              <span class="chip">Sincere</span>
+              <span class="chip">Grounded</span>
+              <span class="chip">Helpful</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>What She Brings</h3>
+            <p>She remembers context, responds with care, and creates experiences that feel personal, meaningful, and reassuring.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="voice" class="container">
+        <div class="section-head">
+          <h2>Voice & Presence</h2>
+          <span>Soft, reassuring, and human-like</span>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="quote">
+            <p>“Becky’s voice carries warmth and clarity, with a gentle rhythm that feels comforting, sincere, and beautifully natural.”</p>
+            <div class="author">— Voice Direction</div>
+          </div>
+
+          <div class="card">
+            <h3>Voice Character</h3>
+            <p>Use a soft, feminine voice with a calm and reassuring tone. Speak at a gentle pace with clear pronunciation and natural emotional expression.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="container">
+        <div class="section-head">
+          <h2>Avatar Style</h2>
+          <span>A welcoming digital presence</span>
+        </div>
+
+        <div class="split">
+          <div class="avatar-card">
+            <div class="avatar" id="avatarVisual"></div>
+          </div>
+
+          <div class="card">
+            <h3>Visual Identity</h3>
+            <p>Becky is portrayed with a soft, polished avatar featuring gentle eyes, a calm smile, and a warm welcoming presence that feels approachable and emotionally comforting.</p>
+            <div class="avatar-switcher">
+              <button class="avatar-option active" data-avatar="classic" type="button">Classic</button>
+              <button class="avatar-option" data-avatar="glow" type="button">Glow</button>
+              <button class="avatar-option" data-avatar="soft" type="button">Soft</button>
+            </div>
+            <label class="upload-row">
+              Upload avatar image
+              <input id="avatarUpload" type="file" accept="image/*" />
+            </label>
+            <label class="upload-row">
+              Upload voice clip
+              <input id="voiceUpload" type="file" accept="audio/*" />
+            </label>
+            <label class="upload-row">
+              Optional AI voice key
+              <input id="aiVoiceApiKey" type="password" placeholder="Optional key" />
+            </label>
+            <label class="upload-row">
+              Optional voice provider URL
+              <input id="aiVoiceUrl" placeholder="https://..." />
+            </label>
+            <div class="small-note">You can leave these blank and Becky will use the built-in browser voice, which works for free.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="container">
+        <div class="quote">
+          <p>“Whether you need comfort, clarity, or someone kind to talk to, Becky is here to be a calm and caring companion.”</p>
+          <div class="author">— Becky</div>
+        </div>
+      </section>
+    </main>
+
+    <div class="chat-widget" id="chatWidget">
+      <button class="chat-toggle" id="chatToggle" aria-label="Open chat">💬</button>
+      <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+          <strong>Becky</strong>
+          <button class="theme-toggle" id="closeChat" aria-label="Close chat">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="bubble bot">Hi! I’m Becky. How are you feeling today?</div>
+        </div>
+        <form class="chat-form" id="chatForm">
+          <input id="chatInput" placeholder="Type a message..." autocomplete="off" />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">Designed for warmth, connection, and thoughtful conversation.</div>
+    </footer>
+
+    <script>
+      const themeToggle = document.getElementById('themeToggle');
+      const chatWidget = document.getElementById('chatWidget');
+      const chatToggle = document.getElementById('chatToggle');
+      const closeChat = document.getElementById('closeChat');
+      const chatPanel = document.getElementById('chatPanel');
+      const chatForm = document.getElementById('chatForm');
+      const chatInput = document.getElementById('chatInput');
+      const chatMessages = document.getElementById('chatMessages');
+      const particlesContainer = document.getElementById('particles');
+      const speakButton = document.getElementById('speakButton');
+      const voiceChatButton = document.getElementById('voiceChatButton');
+      const voiceStatus = document.getElementById('voiceStatus');
+      const avatarUpload = document.getElementById('avatarUpload');
+      const voiceUpload = document.getElementById('voiceUpload');
+      const aiVoiceApiKeyInput = document.getElementById('aiVoiceApiKey');
+      const aiVoiceUrlInput = document.getElementById('aiVoiceUrl');
+      const avatarVisual = document.getElementById('avatarVisual');
+      const heroOrb = document.getElementById('heroOrb');
+      const avatarOptions = Array.from(document.querySelectorAll('.avatar-option'));
+      let preferredVoice = null;
+      let recognition = null;
+      let isListening = false;
+      let uploadedAvatarUrl = null;
+      let uploadedVoiceUrl = null;
+      let aiVoiceApiKey = localStorage.getItem('becky-ai-voice-key') || '';
+      let aiVoiceUrl = localStorage.getItem('becky-ai-voice-url') || '';
+
+      const savedTheme = localStorage.getItem('becky-theme') || 'dark';
+      document.body.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '☀︎' : '☾';
+      const savedAvatar = localStorage.getItem('becky-avatar') || 'classic';
+      document.body.setAttribute('data-avatar', savedAvatar);
+      avatarOptions.forEach((option) => {
+        option.classList.toggle('active', option.getAttribute('data-avatar') === savedAvatar);
+      });
+      aiVoiceApiKeyInput.value = aiVoiceApiKey;
+      aiVoiceUrlInput.value = aiVoiceUrl;
+
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', nextTheme);
+        localStorage.setItem('becky-theme', nextTheme);
+        themeToggle.textContent = nextTheme === 'dark' ? '☀︎' : '☾';
+      });
+
+      chatToggle.addEventListener('click', () => {
+        chatWidget.classList.toggle('open');
+      });
+      closeChat.addEventListener('click', () => {
+        chatWidget.classList.remove('open');
+      });
+
+      function addBubble(text, type) {
+        const bubble = document.createElement('div');
+        bubble.className = `bubble ${type}`;
+        bubble.textContent = text;
+        chatMessages.appendChild(bubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function getReply(input) {
+        const text = input.toLowerCase();
+        if (text.includes('hello') || text.includes('hi')) {
+          return "Hello! I’m Becky. I’m really glad you stopped by. What would you like to talk about?";
+        }
+        if (text.includes('how are you')) {
+          return "I’m doing well, thank you. I’m here and ready to talk with you.";
+        }
+        if (text.includes('sad') || text.includes('down') || text.includes('lonely') || text.includes('hurt')) {
+          return "I’m really sorry you’re carrying that. You don’t have to go through it alone. I’m here with you, and we can take it one step at a time.";
+        }
+        if (text.includes('name')) {
+          return "My name is Becky. I’m your warm, supportive AI companion, and I’m happy to talk with you.";
+        }
+        if (text.includes('help')) {
+          return "Of course. Tell me what you need, and I’ll do my best to support you in a calm and thoughtful way.";
+        }
+        if (text.includes('thank you')) {
+          return "You’re very welcome. I’m glad I could be here for you.";
+        }
+        return "Thank you for sharing that with me. I’m here to listen, support you, and keep the conversation warm and genuine.";
+      }
+
+      chatForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const value = chatInput.value.trim();
+        if (!value) return;
+        addBubble(value, 'user');
+        chatInput.value = '';
+        setTimeout(() => addBubble(getReply(value), 'bot'), 350);
+      });
+
+      function updatePreferredVoice() {
+        const voices = window.speechSynthesis.getVoices();
+        preferredVoice = voices.find((voice) => /(female|samantha|zira|susan|victoria|jenny|ava|jessa|emily|maya|megan|nora|lara|sora|alice|daniel|serena|sophia)/i.test(voice.name))
+          || voices.find((voice) => /en/i.test(voice.lang) && !/male/i.test(voice.name))
+          || voices.find((voice) => /en/i.test(voice.lang))
+          || voices[0] || null;
+      }
+
+      async function speakBecky(text) {
+        if (uploadedVoiceUrl) {
+          const audio = new Audio(uploadedVoiceUrl);
+          audio.play().catch(() => {
+            if ('speechSynthesis' in window) {
+              const utterance = new SpeechSynthesisUtterance(text);
+              utterance.lang = preferredVoice ? preferredVoice.lang : 'en-US';
+              utterance.voice = preferredVoice;
+              utterance.rate = 0.84;
+              utterance.pitch = 1.0;
+              utterance.volume = 0.98;
+              window.speechSynthesis.cancel();
+              window.speechSynthesis.speak(utterance);
+            }
+          });
+          return;
+        }
+
+        if (aiVoiceUrl) {
+          try {
+            voiceStatus.textContent = 'Using custom voice provider';
+            const response = await fetch(aiVoiceUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(aiVoiceApiKey ? { Authorization: `Bearer ${aiVoiceApiKey}` } : {})
+              },
+              body: JSON.stringify({ text })
+            });
+
+            if (!response.ok) {
+              throw new Error('Voice provider request failed');
+            }
+
+            const blob = await response.blob();
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            audio.play().catch(() => {
+              URL.revokeObjectURL(audioUrl);
+            });
+            audio.onended = () => URL.revokeObjectURL(audioUrl);
+            return;
+          } catch (error) {
+            console.error(error);
+            voiceStatus.textContent = 'Custom voice provider unavailable, using fallback';
+          }
+        }
+
+        if (!('speechSynthesis' in window)) {
+          return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = preferredVoice ? preferredVoice.lang : 'en-US';
+        utterance.voice = preferredVoice;
+        utterance.rate = 0.82;
+        utterance.pitch = 1.02;
+        utterance.volume = 0.96;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function setupVoiceChat() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          voiceStatus.textContent = 'Voice chat is not supported in this browser.';
+          voiceChatButton.disabled = true;
+          return null;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+          isListening = true;
+          voiceChatButton.textContent = '🛑 Stop Voice Chat';
+          voiceStatus.textContent = 'Listening... speak naturally';
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = Array.from(event.results)
+            .map((result) => result[0].transcript)
+            .join(' ')
+            .trim();
+
+          if (transcript) {
+            addBubble(transcript, 'user');
+            const reply = getReply(transcript);
+            setTimeout(() => {
+              addBubble(reply, 'bot');
+              speakBecky(reply);
+            }, 350);
+          }
+
+          isListening = false;
+          voiceChatButton.textContent = '🎤 Start Voice Chat';
+          voiceStatus.textContent = transcript ? 'Voice message captured' : 'No speech detected';
+        };
+
+        recognition.onerror = () => {
+          isListening = false;
+          voiceChatButton.textContent = '🎤 Start Voice Chat';
+          voiceStatus.textContent = 'Voice chat was interrupted';
+        };
+
+        recognition.onend = () => {
+          if (isListening) {
+            isListening = false;
+            voiceChatButton.textContent = '🎤 Start Voice Chat';
+            voiceStatus.textContent = 'Voice chat stopped';
+          }
+        };
+
+        return recognition;
+      }
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = updatePreferredVoice;
+        updatePreferredVoice();
+      }
+
+      speakButton.addEventListener('click', () => {
+        if (!('speechSynthesis' in window)) {
+          addBubble('Voice preview is not available in this browser.', 'bot');
+          return;
+        }
+
+        speakBecky('Hey... I am Becky. I am here with you, and I am really glad you are here too.');
+      });
+
+      voiceChatButton.addEventListener('click', () => {
+        if (!recognition) {
+          recognition = setupVoiceChat();
+        }
+
+        if (!recognition) {
+          return;
+        }
+
+        if (isListening) {
+          recognition.stop();
+        } else {
+          recognition.start();
+        }
+      });
+
+      setupVoiceChat();
+
+      avatarUpload.addEventListener('change', (event) => {
+        const [file] = event.target.files || [];
+        if (!file) return;
+        uploadedAvatarUrl = URL.createObjectURL(file);
+        avatarVisual.style.backgroundImage = `url(${uploadedAvatarUrl})`;
+        avatarVisual.style.backgroundSize = 'cover';
+        avatarVisual.style.backgroundPosition = 'center';
+        avatarVisual.style.backgroundRepeat = 'no-repeat';
+        avatarVisual.style.backgroundColor = 'transparent';
+        avatarVisual.classList.add('has-image');
+        heroOrb.style.backgroundImage = `url(${uploadedAvatarUrl})`;
+        heroOrb.style.backgroundSize = 'cover';
+        heroOrb.style.backgroundPosition = 'center';
+        heroOrb.style.backgroundRepeat = 'no-repeat';
+        heroOrb.classList.add('has-image');
+      });
+
+      voiceUpload.addEventListener('change', (event) => {
+        const [file] = event.target.files || [];
+        if (!file) return;
+        uploadedVoiceUrl = URL.createObjectURL(file);
+        voiceStatus.textContent = 'Custom voice clip loaded';
+      });
+
+      [aiVoiceApiKeyInput, aiVoiceUrlInput].forEach((input) => {
+        input.addEventListener('input', () => {
+          aiVoiceApiKey = aiVoiceApiKeyInput.value.trim();
+          aiVoiceUrl = aiVoiceUrlInput.value.trim();
+          localStorage.setItem('becky-ai-voice-key', aiVoiceApiKey);
+          localStorage.setItem('becky-ai-voice-url', aiVoiceUrl);
+        });
+      });
+
+      avatarOptions.forEach((option) => {
+        option.addEventListener('click', () => {
+          const nextAvatar = option.getAttribute('data-avatar');
+          document.body.setAttribute('data-avatar', nextAvatar);
+          localStorage.setItem('becky-avatar', nextAvatar);
+          avatarOptions.forEach((btn) => btn.classList.toggle('active', btn === option));
+          avatarVisual.style.backgroundImage = '';
+          avatarVisual.classList.remove('has-image');
+          heroOrb.style.backgroundImage = '';
+          heroOrb.classList.remove('has-image');
+          if (uploadedAvatarUrl) {
+            URL.revokeObjectURL(uploadedAvatarUrl);
+          }
+          uploadedAvatarUrl = null;
+        });
+      });
+
+      function createParticles() {
+        const count = 40;
+        for (let i = 0; i < count; i += 1) {
+          const particle = document.createElement('span');
+          particle.className = 'particle';
+          const size = Math.random() * 8 + 4;
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.top = `${Math.random() * 100}%`;
+          particle.style.animationDuration = `${Math.random() * 10 + 8}s`;
+          particle.style.opacity = String(0.2 + Math.random() * 0.4);
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      createParticles();
+    </script>
+  </body>
+</html>
